@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<info>
+    <id>bluetooth</id>
+    <name>Bluetooth</name>
+    <description>Plugin pour gérer l'appairage entre Jeedom et les équipements bluetooth</description>
+    <icon>fa fa-share-alt</icon>
+    <licence>AGPL</licence>
+    <author>tmartinez</author>
+    <installation>Il faut installer le serveur OpenZwave :
+    	- Veuillez suivre la procédure d'installation ci-dessous
+        - Puis installer le plugin zwave
+    </installation>
+    <require>1.10</require>
+    <version>0.1</version>
+    <allowRemote>1</allowRemote>
+    <canBeAction>0</canBeAction>
+    <category>automation protocol</category>
+</info>
+

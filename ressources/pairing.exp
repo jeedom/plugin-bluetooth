@@ -1,0 +1,41 @@
+#!/usr/bin/expect
+
+set timeout 20
+
+set mac [lindex $argv 0]
+
+set pin [lindex $argv 1]
+
+spawn bluetoothctl
+
+send "agent on\r";
+
+expect "Agent registered"
+
+send "default-agent\r";
+
+expect "Default agent request successful"
+
+send "scan on\r";
+
+expect "*$mac*"
+
+send "pair $mac\r"
+
+expect "*yes/no*"
+
+send "yes\r"
+
+expect "Pairing successful"
+
+send "trust $mac\r"
+
+expect "Changing $mac trust succeeded"
+
+send "connect $mac\r"
+
+expect "Device $mac Connected: yes"
+
+send "quit\r"
+
+interact

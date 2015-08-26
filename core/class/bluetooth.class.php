@@ -87,7 +87,7 @@ class bluetooth extends eqLogic {
         exec("sudo hciconfig ".config::byKey('port', 'bluetooth')." up");	
         $devices=array();	
 		//log::add('bluetooth','debug','start scanning BT');
-		exec("bt-device -l",$values);
+		exec("sudo bt-device -l",$values);
 		$i=0;
 		foreach ($values as $value) {
 			$services="";
@@ -100,7 +100,7 @@ class bluetooth extends eqLogic {
 				exec("sudo sdptool browse ".trim($device[1])." | grep Service\ Name",$services);
 				$services=str_replace("Service Name: ", "", implode("<br>", $services));
 				if($services==""){
-					exec("bt-device -s ".trim($device[1])." | grep SrvName",$services);
+					exec("sudo bt-device -s ".trim($device[1])." | grep SrvName",$services);
 					$services=str_replace("SrvName: ", "", implode("<br>", $services));
 					$services=str_replace('"', "", $services);
 				}
@@ -115,13 +115,20 @@ class bluetooth extends eqLogic {
         exec("sudo hciconfig ".config::byKey('port', 'bluetooth')." down");	
         exec("sudo hciconfig ".config::byKey('port', 'bluetooth')." up");	
 		if($pin<>""){
-			exec("echo ".$pin."|bluez-simple-agent ".config::byKey('port', 'bluetooth')." ".$mac);
+			exec("sudo ../../ressources/pairing.exp ".$mac." ".$pin);
+			//Bluez 4
+			//exec("echo ".$pin."|bluez-simple-agent ".config::byKey('port', 'bluetooth')." ".$mac);
 		}else{
-			log::add('bluetooth','debug',"bluez-simple-agent ".config::byKey('port', 'bluetooth')." ".$mac);
-			exec("bluez-simple-agent ".config::byKey('port', 'bluetooth')." ".$mac);
+			exec("sudo ../../ressources/pairing.exp ".$mac);
+			//Bluez 4	
+			//log::add('bluetooth','debug',"bluez-simple-agent ".config::byKey('port', 'bluetooth')." ".$mac);
+			//exec("bluez-simple-agent ".config::byKey('port', 'bluetooth')." ".$mac);
 		}
-		exec("bluez-test-device trusted ".$mac." yes");
-		exec("bt-device -s ".trim($device[1])." | grep SrvName",$services);
+		//Bluez 4
+		//exec("bluez-test-device trusted ".$mac." yes");
+		exec("sudo bt-device -s ".trim($device[1])." | grep SrvName",$services);
+		//Bluez 4
+		/*
 		if(strpos($services, 'audio')){
 			$file = file_get_contents("/etc/asound.conf");
 		    if (strpos($file, "bluetooth") !== false) {
@@ -135,16 +142,26 @@ class bluetooth extends eqLogic {
 					}
 					EOL');
 		    }
-		}
+		}*/
 		return true;
     }
     
 	public static function UnpairBT($mac) {
         exec("sudo hciconfig ".config::byKey('port', 'bluetooth')." down");	
         exec("sudo hciconfig ".config::byKey('port', 'bluetooth')." up");	
-		exec("sudo bluez-test-device trusted ".$mac." no");
-		log::add('bluetooth','debug',"sudo bluez-simple-agent ".config::byKey('port', 'bluetooth')." ".$mac." remove");
-		exec("sudo bluez-simple-agent ".config::byKey('port', 'bluetooth')." ".$mac." remove");
+		exec('sudo bluetoothctl << EOF
+					agent on
+					default-agent
+					scan on
+					disconnect '.$mac.'
+					untrust '.$mac.'
+					remove '.$mac.'
+					quit 
+					EOF');
+		//Bluez 4
+		//exec("sudo bluez-test-device trusted ".$mac." no");
+		//log::add('bluetooth','debug',"sudo bluez-simple-agent ".config::byKey('port', 'bluetooth')." ".$mac." remove");
+		//exec("sudo bluez-simple-agent ".config::byKey('port', 'bluetooth')." ".$mac." remove");
 		exec("sudo hciconfig ".config::byKey('port', 'bluetooth')." down");	
         exec("sudo hciconfig ".config::byKey('port', 'bluetooth')." up");
 		return true;

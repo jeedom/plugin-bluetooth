@@ -30,12 +30,15 @@ sudo usermod -a -G bluetooth www-data
 
 # Dpkg
 echo "Installation des dependances"
+apt_install expect
 apt_install bluez
 apt_install python-gobject
 apt_install python-pip
 apt_install python-dbus
+apt_install bluez-tools
 #apt_install bluez-utils
-apt_install bluez-alsa
+#apt_install bluez-alsa
+pip_install pybluez
 
 #sudo wget http://www.kernel.org/pub/linux/bluetooth/bluez-5.30.tar.xz
 #sudo dpkg --get-selections | grep -v deinstall | grep bluez
